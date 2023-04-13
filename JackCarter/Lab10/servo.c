@@ -26,29 +26,39 @@
 #define BIT14       0x4000
 #define BIT15       0x8000
 
+#define PULSE_TIME_MS 20.0
 #define MICROS_PER_CYCLE 6.25e-5
 
-void set_pwm(float high_millis, float low_millis) {
-    uint32_t high_cycles = floorf(high_millis / MICROS_PER_CYCLE);
-    uint32_t low_cycles = floorf(low_millis / MICROS_PER_CYCLE);
+void set_pwm(float pulse_time_ms, float high_time_ms) {
+    uint32_t low_cycles = floorf(pulse_time_ms / MICROS_PER_CYCLE);
+    uint32_t high_cycles = floorf(high_time_ms / MICROS_PER_CYCLE);
 
-    uint32_t high_start = low_cycles + high_cycles;
-    uint32_t low_start = low_cycles;
+    // calculate the timer value at which the pwm signal should go low
+    uint32_t low_point = low_cycles - high_cycles;
 
-    lcd_printf("%x, %x", high_start, low_start);
+    // this sets the maximum pulse time
+    // set prescale start
+    TIMER1_TBPR_R = (low_cycles >> (4 * 4));
+    // set start value
+    TIMER1_TBILR_R = (low_cycles & 0xFFFF);
 
-    // set prescaler start
-    TIMER1_TBPR_R = (high_start >> 4);
-    // set timer start
-    TIMER1_TBILR_R = (high_start & 0xFFFF);
+    // this sets the time to go low at
+    // set the prescale match
+    TIMER1_TBPMR_R = (low_point >> (4 * 4));
+    // set the match value
+    TIMER1_TBMATCHR_R = (low_point & 0xFFFF);
+}
 
-    // set match value for low time
-    // set prescale match
-    TIMER1_TBPMR_R = (low_start >> 4);
-    // set timer match
-    TIMER1_TBMATCHR_R = (low_start & 0xFFFF);
+float angle_to_pwm(float angle) {
+    #define ANGLE_MAX 180
+    #define ANGLE_MIN 0
+    angle = angle > ANGLE_MAX ? ANGLE_MAX : angle;
+    angle = angle < ANGLE_MIN ? ANGLE_MIN : angle;
 
-    //lcd_printf("%x, %x", high_start, low_start);
+    float angle_range = (ANGLE_MAX - ANGLE_MIN);
+    float pwm_range = (servo_pwm_max - servo_pwm_min);
+
+    return (((angle - ANGLE_MIN) * pwm_range) / angle_range) + servo_pwm_min;
 }
 
 void servo_init(void) {
@@ -63,25 +73,18 @@ void servo_init(void) {
     GPIO_PORTB_AFSEL_R |= BIT5;
     GPIO_PORTB_PCTL_R |= 0x700000;
 
-
     // configure timer for pwm
     TIMER1_CTL_R &= ~BIT8; // disable timer
     TIMER1_CFG_R |= 0x4;
     TIMER1_TBMR_R |= 0xA;
 
-    TIMER1_TBILR_R = 0xE200;
-    TIMER1_TBPR_R = 0x4;
-    TIMER1_TBMATCHR_R = 0xE200;
-    TIMER1_TBPMR_R = 0x4;
-
-    //set_pwm(0.75, 20.0);
+    set_pwm(PULSE_TIME_MS, 2.25);
     TIMER1_CTL_R |= BIT8; // re-enable timer
 }
 
-void servo_move(float high) {
+void servo_move(float angle) {
     TIMER1_CTL_R &= ~BIT8; // disable timer
-    set_pwm(high, 20.0);
+    set_pwm(PULSE_TIME_MS, angle_to_pwm(angle));
     TIMER1_CTL_R |= BIT8; // re-enable timer
-
-    timer_waitMillis(2000);
+    timer_waitMillis(10);
 }

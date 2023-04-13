@@ -195,7 +195,15 @@ int main (void) {
     //adc_init();
     servo_init();
 
-    while (1) {}
+    float angle = 0;
+    while (1) {
+        servo_move(angle);
+        angle += 90;
+        if (angle > 180) {
+            angle = 0;
+        }
+        timer_waitMillis(1000);
+    }
     //cyBOT_SERVRO_cal_t calibration = cyBOT_SERVO_cal();
     //right_calibration_value = /*248500;*/ calibration.right;
     //left_calibration_value = /*1214500;*/ calibration.left;
