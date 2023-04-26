@@ -3,3 +3,5 @@
 
 //plays loaded song for specified amount of time
 void sound_play_song(int time);
+
+#endif
