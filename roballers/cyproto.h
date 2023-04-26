@@ -58,14 +58,15 @@ typedef struct CommandRequest {
   };
 } CommandRequest;
 
-typedef struct ScanData {
-  float ping_distance;
-  float ir_distance;
-} ScanData;
+typedef struct ObjectData {
+  float distance;
+  uint8_t angle;
+  float width;
+} ObjectData;
 
 typedef struct ScanDone {
   size_t size;
-  const struct ScanData *data;
+  const struct ObjectData *objects;
 } ScanDone;
 
 typedef struct TurnDone {
