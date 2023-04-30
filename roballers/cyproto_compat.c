@@ -25,7 +25,7 @@ void read_command_into(uint8_t buf[]) {
 
 CommandRequest read_command(void) {
     uint8_t buf[cyproto_buffer_size()];
-    read_command(buf);
+    read_command_into(buf);
     return cyproto_parse_command(buf);
 }
 
