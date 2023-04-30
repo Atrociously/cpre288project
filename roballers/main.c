@@ -22,4 +22,6 @@ int main() {
     oi_init(sensor_data);           //(needed for movement and stuff)
 
     move_forward(sensor_data, 300);
+
+    oi_free(sensor_data);
 }

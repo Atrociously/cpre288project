@@ -100,18 +100,17 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
             //cliff detection
             //both cliff sensors and wheel drop sensors
             if(sensor_data -> cliffLeft || sensor_data -> cliffFrontLeft || sensor_data -> cliffRight || sensor_data -> cliffFrontRight) { //cliff
-                oi_setWheels(0, 0); //stops wheels
-                move_backwards(sensor_data, 150); //back away from hole and wait further instructions
+                oi_setWheels(0, 0); //stops wheels and awaits instructions
                 break;
             }
             if(sensor_data -> wheelDropLeft || sensor_data -> wheelDropRight) { //wheeldrop
-                oi_setWheels(0, 0); //stops wheels
-//                move_backwards(sensor_data, 150); //back away from hole and wait further instructions
+                oi_setWheels(0, 0); //stops wheels and awaits instructions
                 break;
             }
 
 //            //boundary detection
-//            //bases on color which is the value 2700 represents
+//            //the cliffSignal variables all track the "strength" (color) of the cliff, which will let us identify the boundary lines
+//            //values vary from 0-4095
 //            if(sensor_data -> cliffLeftSignal > 2700 || sensor_data -> cliffFrontLeftSignal > 2700
 //                    || sensor_data -> cliffRightSignal > 2700 || sensor_data -> cliffFrontRightSignal > 2700) {
 //                oi_setWheels(0, 0); //stops wheels
@@ -121,23 +120,15 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
 
             //bump detection (continues to move forward)
             if(sensor_data -> bumpLeft) { //left sensor
-                oi_setWheels(0, 0); //stops wheels
-                move_backwards(sensor_data, 150); //move back 150 mm
-                turn_right(sensor_data, -90); //right turn
-                move_forward(sensor_data, 250); //move forward
-                turn_left(sensor_data, 90); //left turn
+                oi_setWheels(0, 0); //stops wheels and awaits further instructions
             }
             if(sensor_data -> bumpRight) { //right sensor
                 oi_setWheels(0, 0);
-                move_backwards(sensor_data, 150);
-                turn_left(sensor_data, 90);
-                move_forward(sensor_data, 250);
-                turn_right(sensor_data, -90);
             }
 
         }
 
-        oi_setWheels(0, 0); //stop
+        oi_setWheels(0, 0); //stops once the distance is reached
 }
 
 
