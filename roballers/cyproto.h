@@ -28,9 +28,8 @@ typedef struct TurnCommand {
 } TurnCommand;
 
 typedef struct ScanCommand {
-  uint8_t start_angle;
-  uint8_t end_angle;
-  uint8_t fidelity;
+  uint8_t start;
+  uint8_t end;
 } ScanCommand;
 
 typedef enum CommandRequest_Tag {
@@ -73,12 +72,16 @@ typedef struct TurnDone {
   float total_angle;
 } TurnDone;
 
-enum CyprotoError cyproto_drive_done(struct DriveDone val);
+size_t cyproto_buffer_size(void);
+
+size_t cyproto_drive_done(struct DriveDone val, uint8_t *buf);
+
+struct CommandRequest cyproto_parse_command(uint8_t *buf);
 
 struct CommandRequest cyproto_read_command(void);
 
 enum CyprotoError cyproto_scan_done(struct ScanDone val);
 
-size_t cyproto_scan_size(struct ScanCommand cmd);
-
 enum CyprotoError cyproto_turn_done(struct TurnDone val);
+
+size_t max_objects(void);
