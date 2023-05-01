@@ -79,7 +79,7 @@ void servo_init(void) {
     TIMER1_CFG_R |= 0x4;
     TIMER1_TBMR_R |= 0xA;
 
-    set_pwm(PULSE_TIME_MS, 2.25);
+    set_pwm(PULSE_TIME_MS, 0.5);
     TIMER1_CTL_R |= BIT8; // re-enable timer
 }
 

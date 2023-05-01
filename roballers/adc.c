@@ -1,48 +1,70 @@
 /*
  * adc.c
  *
- *  Created on: Mar 22, 2023
- *      Author: lincolnh
+ *  Created on: Mar 23, 2023
+ *      Author: jackmorr
  */
-
-
 #include <inc/tm4c123gh6pm.h>
 #include <stdint.h>
-#include "adc.h"
+#include <math.h>
 
-//USING SAMPLE SEQUENCE 3
+#define BIT0        0x01
+#define BIT1        0x02
+#define BIT2        0x04
+#define BIT3        0x08
+#define BIT4        0x10
+#define BIT5        0x20
+#define BIT6        0x40
+#define BIT7        0x80
 
-void adc_init(void) {
-    SYSCTL_RCGCADC_R |= 0x0001; // 1) activate ADC0
-    while((SYSCTL_PRADC_R & 0x0001) != 0x0001){}; //wait for ADC to be ready
-    SYSCTL_RCGCGPIO_R |= 0x02; // 2) activate clock for Port B
-    while((SYSCTL_PRGPIO_R & 0x02) != 0x02) {}; // 3 for stabilization
-    GPIO_PORTB_DIR_R &= ~0x10; // 4) make PB4 input
-    GPIO_PORTB_AFSEL_R |= 0x10; // 5) enable alternate function on PB4
-    GPIO_PORTB_DEN_R &= ~0x10; // 6) disable digital I/O on PB4
-    GPIO_PORTB_AMSEL_R |= 0x10; // 7) enable analog functionality on PB4
+#define VREFP 3.3
+#define VREFN 0.0
+#define MAX_RAW 4096.0;
 
-    ADC0_ACTSS_R &= ~0x0008; // 10) disable sample sequencer 3
-    ADC0_EMUX_R &= ~0xF000; // 11) seq3 is software trigger
-    ADC0_SSMUX3_R &= ~0x000F;
-    ADC0_SSMUX3_R |= 0xA; // 12) set channel
-    ADC0_SSCTL3_R = 0x0006; // 13) no TS0 D0, yes IE0 END0
-    ADC0_IM_R &= ~0x0008; // 14) disable SS3 interrupts
-    ADC0_ACTSS_R |= 0x0008; // 15) enable sample sequencer 3
+#define MAGIC_POWER -1.75
+#define MAGIC_M 9.55E+06
+#define MAGIC_INVERSE 0.42
+
+void adc_init() {
+    SYSCTL_RCGCADC_R |= BIT0; // enable clocks for analog digital converter 0 (ADC0)
+
+    SYSCTL_RCGCGPIO_R |= BIT1;
+
+    GPIO_PORTB_AMSEL_R |= BIT4; // set analog function on pin 4
+    GPIO_PORTB_DEN_R |= BIT4; // enable gpio pin 4
+    GPIO_PORTB_DIR_R &= ~BIT4; // set input on pin 4
+    GPIO_PORTB_DIR_R &= ~BIT4; // set input on pin 4
+
+    ADC0_CC_R |= ADC_CC_CS_SYSPLL;
+    ADC0_SSCTL3_R |= ADC_SSCTL3_IE0;
+    ADC0_IM_R &= ~ADC_IM_MASK3;
+    ADC0_ACTSS_R |= BIT3; // enable sample sequencer 3 (SS3) for ADC0
+    ADC0_EMUX_R &= 0x0FFF; // set trigger source to software for SS3
+    ADC0_SSMUX3_R |= 10; // set analog input to AIN10 which is wired to the IR
 }
 
-/*
- * returns an IR_value
- */
-uint16_t adc_read(void) {
-    uint16_t result;
-    ADC0_PSSI_R |= 0x8;
-    while((ADC0_RIS_R & 0x8) == 0) {}; //waits until the raw interrupt flag goes is detected
-    result = ADC0_SSFIFO3_R & 0x0FFF; //assign result with the SSFIFO(sample sequence result
-    ADC0_ISC_R |= 0x8; //interrupt status and clear
+
+int16_t adc_getRawValue() {
+    ADC0_PSSI_R |= BIT3;
+    while (ADC0_RIS_R & BIT3 == 0) {} // wait for conversion to be complete
+    int16_t result = ADC0_SSFIFO3_R & 0x00000FFF; // read the result and only keep bits 0-11
+    ADC0_ISC_R |= BIT3;
 
     return result;
 }
 
+float adc_convert(int16_t raw) {
+//    float factor = (VREFP - VREFN) / MAX_RAW;
+//    float voltage = factor * (float) raw;
+    return MAGIC_M * powf(raw, MAGIC_POWER);
+}
 
+float adc_getVoltage() {
+    float factor = (VREFP - VREFN) / MAX_RAW; // conversion factor from Tiva-Datasheet p.809
+    return  factor * (float) adc_getRawValue();
+}
 
+float adc_getDistance() {
+    float voltage = adc_getVoltage();
+    return MAGIC_M * powf(voltage, MAGIC_POWER);
+}

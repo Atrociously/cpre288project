@@ -1,18 +1,19 @@
 /*
  * adc.h
  *
- *  Created on: Mar 22, 2023
- *      Author: lincolnh
+ *  Created on: Mar 23, 2023
+ *      Author: jackmorr
  */
 
 #ifndef ADC_H_
 #define ADC_H_
+#include <stdint.h>
 
-#include <inc/tm4c123gh6pm.h>
-
-void adc_init(void);
-
-uint16_t adc_read(void);
+void adc_init();
+int32_t adc_getRawValue();
+float adc_getVoltage();
+float adc_getDistance();
+float adc_convert(int16_t);
 
 
 #endif /* ADC_H_ */
