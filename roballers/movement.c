@@ -64,6 +64,13 @@ void move_backwards(oi_t *sensor_data, double distance_mm) {
     //moves until distance is achieved
         while(sum < distance_mm) {
 
+            //cliff detection
+            if(sensor_data -> wheelDropLeft || sensor_data -> wheelDropRight) { //wheeldrop
+                oi_setWheels(0, 0); //stops wheels and awaits instructions
+                break;
+            }
+
+            //movement
             oi_setWheels(-250, -250); //move backwards at half speed
 
             oi_update(sensor_data);
@@ -71,10 +78,7 @@ void move_backwards(oi_t *sensor_data, double distance_mm) {
             //update distance traveled
             sum -= sensor_data -> distance;
 
-            if(sensor_data -> wheelDropLeft || sensor_data -> wheelDropRight) { //wheeldrop
-                oi_setWheels(0, 0); //stops wheels
-                break;
-            }
+
         }
 
         oi_setWheels(0, 0); //stop
@@ -87,16 +91,6 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
 
     //moves until distance is achieved
         while(sum < distance_mm) {
-
-            oi_setWheels(250, 250); //move forward at half speed
-
-            oi_update(sensor_data);
-
-            //update distance travelled
-            sum += sensor_data -> distance;
-
-            lcd_printf("%.2lf", sum);
-
             //cliff detection
             //both cliff sensors and wheel drop sensors
             if(sensor_data -> cliffLeft || sensor_data -> cliffFrontLeft || sensor_data -> cliffRight || sensor_data -> cliffFrontRight) { //cliff
@@ -126,6 +120,15 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
                 oi_setWheels(0, 0);
             }
 
+            //movement
+            oi_setWheels(250, 250); //move forward at half speed
+
+            oi_update(sensor_data);
+
+            //update distance traveled
+            sum += sensor_data -> distance;
+
+            //lcd_printf("%.2lf", sum); //displays distance traveled for testing purposes
         }
 
         oi_setWheels(0, 0); //stops once the distance is reached

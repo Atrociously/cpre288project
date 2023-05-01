@@ -75,6 +75,7 @@ typedef struct TurnDone {
 /**
  * Get the expected buffer size for serializing and deserializing data
  * make sure the buffer has exactly cyproto_buffer_size() elements
+ * (USE TO CREATE BUFFER)
  */
 size_t cyproto_buffer_size(void);
 

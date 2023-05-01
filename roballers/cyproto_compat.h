@@ -10,8 +10,15 @@
 
 #include "cyproto.h"
 #include "uart_int.h"
-
+/*
+ * blocks
+ */
 CommandRequest read_command(void);
+
+/*
+ * Sends encoded buffer from Cybot to UI over UART. buf[] needs contain the proper
+ * serialized response before it can be sent. Serialize with cyproto.h
+ */
 void send_response(uint8_t buf[]);
 
 #endif /* CYPROTO_COMPAT_H_ */

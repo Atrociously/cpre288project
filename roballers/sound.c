@@ -2,13 +2,14 @@
 
 
 //loads song index of choice to the oi
-void sound_load_songs() {
+void sound_load_songs(int index) {
     //Never Gonna Give You UP
-    int rickrollNumNotes = 11;
-    unsigned char rickrollNotes[11]    = {53, 55, 48, 55, 57, 60, 58, 57, 53, 55, 48};
-    unsigned char rickrollDuration[11] = {48, 64, 16, 48, 48, 8,  8,  8,  48, 64, 64};
-    oi_loadSong(RICK_ROLL, rickrollNumNotes, rickrollNotes, rickrollDuration);
-
+    if(index == 1) {
+        int rickrollNumNotes = 11;
+        unsigned char rickrollNotes[11]    = {53, 55, 48, 55, 57, 60, 58, 57, 53, 55, 48};
+        unsigned char rickrollDuration[11] = {48, 64, 16, 48, 48, 8,  8,  8,  48, 64, 64};
+        oi_loadSong(RICK_ROLL, rickrollNumNotes, rickrollNotes, rickrollDuration);
+    }
     //Jaws Theme
 }
 

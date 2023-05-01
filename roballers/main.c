@@ -21,7 +21,20 @@ int main() {
     oi_t *sensor_data = oi_alloc(); //Initializes the open interface functions and sensor data
     oi_init(sensor_data);           //(needed for movement and stuff)
 
+    //SCARY FACE FOR ROBOT
+    lcd_gotoLine(1);
+    lcd_puts("    .\\   /.");
+    lcd_gotoLine(2);
+    lcd_puts("       >");
+    lcd_gotoLine(3);
+    lcd_puts("      000");
+    lcd_gotoLine(4);
+    lcd_puts("DIE HUMANS!!");
+
     move_forward(sensor_data, 300);
 
-    oi_free(sensor_data);
+    sound_load_song(RICK_ROLL)
+    sound_play_song(RICK_ROLL);
+
+    oi_free(sensor_data); //frees the oi so robot isn't locked up
 }
