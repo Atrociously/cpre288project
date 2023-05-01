@@ -128,6 +128,10 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
             sum += sensor_data -> distance;
 
             //lcd_printf("%.2lf", sum); //displays distance traveled for testing purposes
+
+            //prints cliff signal data
+            //front right signal is really small for some reason, probably bot specific
+            //lcd_printf("%d\t%d\t%d\t%d\t", sensor_data -> cliffLeftSignal, sensor_data -> cliffFrontLeftSignal, sensor_data -> cliffFrontRightSignal, sensor_data -> cliffRightSignal);
         }
 
         oi_setWheels(0, 0); //stops once the distance is reached
