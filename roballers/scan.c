@@ -26,11 +26,11 @@ void scan() {
     //object structure containing all necessary object data
     typedef struct {
         int start; //start angle
-        int start_dist; //IR Val at the start edge
+        int start_edge; //IR Val at the start edge
         int end; //end angle
         int width; // in degrees
         int angle; //center angle
-        double distance; //distance in centimeters (measured with PING))))
+        int distance; //distance in centimeters (measured with PING))))
     } object_t;
 
 
@@ -62,7 +62,7 @@ void scan() {
     //initialize objects
     for(m = 0; m < 20; m++) {
         objects[m].start = -1;
-        objects[m].start_dist = -1;
+        objects[m].start_edge = -1;
         objects[m].end = -1;
         objects[m].width = -1;
         objects[m].angle = -1;
@@ -77,6 +77,9 @@ void scan() {
 
         //need to calibrate scanner
         servo_move(degrees); //turns scanner to degrees
+
+        //wait 5 microseconds
+//        timer_waitMillis(50);
 
         for(j = 0; j < 3; j++) { //fills array[][]
             //replaces cyBot_scan
@@ -96,47 +99,43 @@ void scan() {
         //calculates avg distance
         avg_array[i] = (array[0][i] + array[1][i] + array[2][i]) / 3.0;
 
-//
-//
-//        //detects and sets start edge
-//        //if there isn't a current start edge
-//        if(objects[num_objects].start == -1) {
-//            if(avg_array[i] > 80.0) {
-//                objects[num_objects].start = degrees;
-//                objects[num_objects].start_dist = avg_array[i];
-//            }
-//        }
-//        //detects end edge and completes object
-//        else if(avg_array[i] < objects[num_objects].start_dist) {
-//            objects[num_objects].end = degrees;
-//            objects[num_objects].width = objects[num_objects].end - objects[num_objects].start;
-//            objects[num_objects].angle = (objects[num_objects].end + objects[num_objects].start) / 2;
-//            num_objects++;
-//        }
-//
-//
-//        //kill order so memory doesn't get jacked up
-//        if(num_objects > 20) {
-//            return 0;
-//        }
-//
-//        //send data to PuTTY
-//        sprintf(str,"Degrees: %d\tDistance(cm): %d\tNum Objects: %d\n\r", degrees, avg_array[i], num_objects);
-//        uart_sendStr(str);
+
+
+        //detects and sets start edge
+        //if there isn't a current start edge
+        if(objects[num_objects].start == -1) {
+            if(avg_array[i] < 80.0) {
+                objects[num_objects].start = degrees;
+                objects[num_objects].start_edge = avg_array[i]; //sets objects starting edge
+            }
+        }
+        //detects end edge and completes object
+        else if(avg_array[i] > objects[num_objects].start_edge) {
+            objects[num_objects].end = degrees;
+            objects[num_objects].width = objects[num_objects].end - objects[num_objects].start; //gets the angular width of an object
+            objects[num_objects].angle = (objects[num_objects].end + objects[num_objects].start) / 2; //finds middle angle
+            objects[num_objects].distance = avg_array[objects[num_objects].angle / 2]; //gets distance at middle angle (angle should be i so / by 2)
+            num_objects++;
+        }
+
+
+        //kill order so memory doesn't get jacked up
+        if(num_objects > 20) {
+            return 0;
+        }
 
         //send data to PuTTY
-                sprintf(str,"Degrees: %d\tDistance(cm): %d\n\r", degrees, avg_array[i]);
-                uart_sendStr(str);
+        sprintf(str,"Degrees: %d\tDistance(cm): %d\tNum Objects: %d\n\r", degrees, avg_array[i], num_objects);
+        uart_sendStr(str);
     }
 
 
-
-//    //print object data
-//    m = 0;
-//    while(m < num_objects) {
-//        sprintf(str, "Object[%d]: Width = %d\tAngle = %d\n\r", m,  objects[m].width, objects[m].angle);
-//        uart_sendStr(str);
-//        m++;
-//    }
+    //print object data
+    m = 0;
+    while(m < num_objects) {
+        sprintf(str, "Object[%d]: Distance = %d\tAngle = %d\n\r", m,  objects[m].distance, objects[m].angle);
+        uart_sendStr(str);
+        m++;
+    }
 }
 

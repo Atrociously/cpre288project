@@ -37,11 +37,3 @@ int main() {
     oi_free(sensor_data); //frees the oi so robot isn't locked up
 }
 
-
-////print object data
-//m = 0;
-//while(m < num_objects) {
-//    sprintf(str, "Object[%d]: Width = %d\tAngle = %d\n\r", m,  objects[m].width, objects[m].angle);
-//    uart_sendStr(str);
-//    m++;
-//}
