@@ -102,15 +102,14 @@ void move_forward(oi_t *sensor_data, double distance_mm) {
                 break;
             }
 
-//            //boundary detection
-//            //the cliffSignal variables all track the "strength" (color) of the cliff, which will let us identify the boundary lines
-//            //values vary from 0-4095
-//            if(sensor_data -> cliffLeftSignal > 2700 || sensor_data -> cliffFrontLeftSignal > 2700
-//                    || sensor_data -> cliffRightSignal > 2700 || sensor_data -> cliffFrontRightSignal > 2700) {
-//                oi_setWheels(0, 0); //stops wheels
-//                move_backwards(sensor_data, 150); //back away from hole and wait further instructions
-//                break;
-//            }
+            //boundary detection
+            //the cliffSignal variables all track the "strength" (color) of the cliff, which will let us identify the boundary lines
+            //values vary from 0-4095
+            if(sensor_data -> cliffLeftSignal > 2700 || sensor_data -> cliffFrontLeftSignal > 2700
+                    || sensor_data -> cliffRightSignal > 2700 || sensor_data -> cliffFrontRightSignal > 2700) {
+                oi_setWheels(0, 0); //stops wheels and waits for instruction
+                break;
+            }
 
             //bump detection (continues to move forward)
             if(sensor_data -> bumpLeft) { //left sensor

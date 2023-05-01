@@ -8,6 +8,7 @@
 
 #include "cyproto.h"
 #include "uart_int.h"
+#include "Timer.h"
 
 void read_command_into(uint8_t buf[]) {
     size_t index = 0;
