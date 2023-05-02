@@ -1,3 +1,6 @@
+#ifndef CYPROTO_H_
+#define CYPROTO_H_
+
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -75,7 +78,6 @@ typedef struct TurnDone {
 /**
  * Get the expected buffer size for serializing and deserializing data
  * make sure the buffer has exactly cyproto_buffer_size() elements
- * (USE TO CREATE BUFFER)
  */
 size_t cyproto_buffer_size(void);
 
@@ -104,3 +106,5 @@ size_t cyproto_turn_done(struct TurnDone val, uint8_t *buf);
  * make sure the buffer has exactly cyproto_buffer_size() elements
  */
 size_t max_objects(void);
+
+#endif
