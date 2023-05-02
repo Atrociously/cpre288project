@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include "movement.h"
 #include "cyproto.h"
+#include "sound.h"
 
 
 TurnDone turn_right(oi_t*sensor_data, double degrees, int speed){
@@ -135,22 +136,28 @@ DriveDone move_forward(oi_t *sensor_data, double distance_cm, int speed) {
             //boundary detection
             //the cliffSignal variables all track the "strength" (color) of the cliff, which will let us identify the boundary lines
             //values vary from 0-4095
-//            if(sensor_data -> cliffLeftSignal > 2700 || sensor_data -> cliffFrontLeftSignal > 2700
-//                    || sensor_data -> cliffRightSignal > 2700 || sensor_data -> cliffFrontRightSignal > 2700) {
-//                oi_setWheels(0, 0); //stops wheels and waits for instruction
-//                data.cliff_detected = true;
-//                break;
-//            }
+            if(sensor_data -> cliffLeftSignal > 2700 || sensor_data -> cliffFrontLeftSignal > 2700
+                    || sensor_data -> cliffRightSignal > 2700 || sensor_data -> cliffFrontRightSignal > 2700) {
+                oi_setWheels(0, 0); //stops wheels and waits for instruction
+                data.cliff_detected = true;
+                break;
+            }
 
             //bump detection (continues to move forward)
             if(sensor_data -> bumpLeft) { //left sensor
                 oi_setWheels(0, 0); //stops wheels and awaits further instructions
                 data.bump_detected = true;
+                //plays music on kill
+                 sound_load_halloweenTheme();
+                 sound_play_halloweenTheme();
                 break;
             }
             if(sensor_data -> bumpRight) { //right sensor
                 oi_setWheels(0, 0);
                 data.bump_detected = true;
+                //plays music on kill
+                 sound_load_halloweenTheme();
+                 sound_play_halloweenTheme();
                 break;
             }
 
@@ -161,12 +168,6 @@ DriveDone move_forward(oi_t *sensor_data, double distance_cm, int speed) {
 
             //update distance traveled
             sum += sensor_data -> distance;
-
-            //lcd_printf("%.2lf", sum); //displays distance traveled for testing purposes
-
-            //prints cliff signal data
-            //front right signal is really small for some reason, probably bot specific
-            //lcd_printf("%d\t%d\t%d\t%d\t", sensor_data -> cliffLeftSignal, sensor_data -> cliffFrontLeftSignal, sensor_data -> cliffFrontRightSignal, sensor_data -> cliffRightSignal);
         }
 
         oi_setWheels(0, 0); //stops once the distance is reached

@@ -14,12 +14,11 @@
 
 
 
-//plays loaded song for specified amount of time
-void sound_load_song(int time);
+//loads song to the robot
+void sound_load_halloweenTheme();
 
-//plays a song of choice numLoops times
-
-void sound_play_song(int songIndex, int numLoops);
+//plays loaded song
+void sound_play_halloweenTheme();
 
 
 #endif

@@ -7,12 +7,7 @@
 #include "objects.h"
 #include "uart_int.h"
 #include "servo.h"
-
-#define RICK_ROLL   0
-//#define IMERPIAL_MARCH      1
-//#define MARIO_UNDERWORLD    3
-//#define MARIO_UNDERWATER    7
-#define JAWS    4
+#include "sound.h"
 
 int main() {
     // servo calibration
@@ -22,7 +17,18 @@ int main() {
     timer_init(); // Initialize Timer, needed before any LCD screen functions can be called
                     // and enables time functions (e.g. timer_waitMillis)
 
-    //lcd_init();   // Initialize the LCD screen.  This also clears the screen.
+    lcd_init();   // Initialize the LCD screen.  This also clears the screen.
+
+    //SCARY FACE FOR ROBOT
+    lcd_gotoLine(1);
+    lcd_puts("    .\\   /.");
+    lcd_gotoLine(2);
+    lcd_puts("       >");
+    lcd_gotoLine(3);
+    lcd_puts("      000");
+    lcd_gotoLine(4);
+    lcd_puts("DIE HUMANS!!");
+
 
     uart_interrupt_init(); //Initialize uart interrupts
 
@@ -30,8 +36,6 @@ int main() {
     oi_init(sensor_data);           //(needed for movement and stuff)
 
 
-
-//    uint8_t data_buffer[]; //buffer used for sending data from cybot to UI
 //    uint8_t *buffer[] = (uint8_t)malloc(cyproto_buffer_size);
     CommandRequest comm;
 
@@ -94,22 +98,6 @@ int main() {
         send_response(data_buffer);
     }
 
-
-
-
-//
-//    //SCARY FACE FOR ROBOT
-//    lcd_gotoLine(1);
-//    lcd_puts("    .\\   /.");
-//    lcd_gotoLine(2);
-//    lcd_puts("       >");
-//    lcd_gotoLine(3);
-//    lcd_puts("      000");
-//    lcd_gotoLine(4);
-//    lcd_puts("DIE HUMANS!!");
-
-//    Obj_t arr[42];
-//    size_t amt = scan_objects(arr, 42);
 
     oi_free(sensor_data); //frees the oi so robot isn't locked up
 }
