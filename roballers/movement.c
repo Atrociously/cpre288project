@@ -99,7 +99,7 @@ DriveDone move_backwards(oi_t *sensor_data, double distance_cm, int speed) {
         oi_setWheels(0, 0); //stop
 
         //initialize the struct
-        data.total_distance = -sum;
+        data.total_distance = -sum / 10;
 
         return data;
 
@@ -172,7 +172,7 @@ DriveDone move_forward(oi_t *sensor_data, double distance_cm, int speed) {
         oi_setWheels(0, 0); //stops once the distance is reached
 
         //initialize the struct
-        data.total_distance = sum;
+        data.total_distance = sum / 10;
 
         return data;
 }
