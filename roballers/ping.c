@@ -94,7 +94,8 @@ float ping_distance(void) {
     TIMER3_TBPR_R |= 0xFF;
     TIMER3_TBV_R |= 0xFFFF;
 
-    return (0.0625 * (START_TIME - END_TIME)) * 0.0343;
+    // num cycles * ms_per_cycle * speed of sound in cm/ms / 2 for round trip
+    return ((0.0625 * (START_TIME - END_TIME)) * 0.0343) / 2.0;
 }
 
 void TIMER3B_Handler(void) {

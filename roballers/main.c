@@ -6,7 +6,7 @@
 #include "movement.h"
 #include "objects.h"
 #include "uart_int.h"
-//#include "cyproto.h"
+#include "servo.h"
 
 #define RICK_ROLL   0
 //#define IMERPIAL_MARCH      1
@@ -15,6 +15,9 @@
 #define JAWS    4
 
 int main() {
+    // servo calibration
+    servo_pwm_max = 2.24; // default 2.25
+    servo_pwm_min = 0.49; // defult 0.5
 
     timer_init(); // Initialize Timer, needed before any LCD screen functions can be called
                     // and enables time functions (e.g. timer_waitMillis)

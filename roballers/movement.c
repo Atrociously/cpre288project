@@ -27,11 +27,6 @@ TurnDone turn_right(oi_t*sensor_data, double degrees, int speed){
         oi_update(sensor_data);
 
         angle_sum += sensor_data -> angle;
-
-        //corrects if over turned
-        if(angle_sum < degrees) {
-             angle_sum = degrees;
-         }
     }
 
     oi_setWheels(0,0); //stop the turn
@@ -56,11 +51,6 @@ TurnDone turn_left(oi_t*sensor_data, double degrees, int speed){
         oi_update(sensor_data);
 
         angle_sum += sensor_data -> angle;
-
-        //corrects if overturned
-        if(angle_sum > degrees) {
-            angle_sum = degrees;
-        }
     }
 
     oi_setWheels(0,0); //stop the turn
@@ -73,7 +63,11 @@ TurnDone turn_left(oi_t*sensor_data, double degrees, int speed){
 
 
 //MAKE BOTH MOVEMENTS RETURN A DRIVEDONE STRUTT
-DriveDone move_backwards(oi_t *sensor_data, double distance_mm, int speed) {
+DriveDone move_backwards(oi_t *sensor_data, double distance_cm, int speed) {
+    oi_update(sensor_data);
+    oi_update(sensor_data);
+
+    double distance_mm = distance_cm * 10;
     double sum = 0;
     DriveDone data;
 
@@ -111,8 +105,11 @@ DriveDone move_backwards(oi_t *sensor_data, double distance_mm, int speed) {
 
 }
 
-DriveDone move_forward(oi_t *sensor_data, double distance_mm, int speed) {
+DriveDone move_forward(oi_t *sensor_data, double distance_cm, int speed) {
+    oi_update(sensor_data);
+    oi_update(sensor_data);
 
+    double distance_mm = distance_cm * 10;
     double sum = 0;
     DriveDone data;
 

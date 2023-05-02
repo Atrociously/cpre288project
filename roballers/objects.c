@@ -17,24 +17,28 @@ typedef struct {
 } Scan_t;
 
 int IR_validated(int raw_val) {
-    if (raw_val <= 800 || raw_val >= 3000) {
+    if (raw_val <= 600 || raw_val >= 3000) {
         return -1;
     } else {
         return raw_val;
     }
 }
 
-void scan_around(Scan_t output[], size_t len) {
+void scan_around(Scan_t output[181]) {
+    servo_move(0);
+    adc_getRawValue();
+    timer_waitMillis(500);
+
     uint16_t i = 0;
     uint16_t angle = 0;
-    for (i = 0; i < len; i++) {
+    for (i = 0; i <= 180; i++) {
         Scan_t data;
         servo_move(angle);
         data.ir_raw = adc_getRawValue();
         data.ir_dist = adc_convert(data.ir_raw);
         timer_waitMillis(100);
         output[i] = data;
-        angle += 180 / len;
+        angle += 1;
     }
 }
 
@@ -44,9 +48,9 @@ size_t scan_objects(Obj_t objects[], size_t max) {
     servo_init();
     timer_init();
 
-    #define DATA_LEN 180
+    #define DATA_LEN 181
     Scan_t data[DATA_LEN];
-    scan_around(data, DATA_LEN);
+    scan_around(data);
 
     int angle = 0;
     int last_angle = 0;
@@ -56,9 +60,6 @@ size_t scan_objects(Obj_t objects[], size_t max) {
     // create objects
     for (; angle < DATA_LEN; angle++) {
         int valid = IR_validated(data[angle].ir_raw);
-        char msg[100];
-        sprintf(msg, "Angle: %d Val: %d\r\n", angle, valid);
-        uart_sendStr(msg);
 //        float last_dist;
 //        if (angle >= 1) {
 //            last_dist = data[angle-1].ir_dist;
@@ -88,8 +89,9 @@ size_t scan_objects(Obj_t objects[], size_t max) {
         int center_point = obj->right + (angular_width / 2);
 
         servo_move(center_point);
-        timer_waitMillis(500); // wait for servo to move
-        float dist = data[center_point].ir_dist; // get the ping distance
+        timer_waitMillis(1000); // wait for servo to move
+        //float dist = data[center_point].ir_dist; // get the ping distance
+        float dist = ping_distance();
         obj->distance = dist;
 
         float arc_length = angular_width * (M_PI / 180.0) * dist;

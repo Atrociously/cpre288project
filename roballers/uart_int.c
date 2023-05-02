@@ -7,6 +7,7 @@
 #include <inc/tm4c123gh6pm.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include "driverlib/interrupt.h"
 
 void UART1_Handler(void);
@@ -22,7 +23,7 @@ void UART1_Handler(void);
 
 
 static int index = 0;
-static uint8_t buffer[512];
+static uint8_t buffer[256]; // maximum message buffer size
 
 void uart_interrupt_init(void) {
     //enable clock to GPIO port B
